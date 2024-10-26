@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://langfuse.com
+
+# Sitemaps
+Sitemap: https://langfuse.com/sitemap.xml

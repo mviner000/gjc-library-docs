@@ -1,0 +1,127 @@
+---
+title: Eyygo Documentation
+description: Eyygo is an open source LLM engineering platform. It includes observability, analytics, and experimentation features.
+faq-tags: [security]
+---
+
+import { CopyButton } from "@/components/CopyButton";
+
+## Installation
+
+<div className="mt-7 flex items-center font-semibold text-white bg-black p-4 rounded-lg">
+  <pre className="flex-1 m-0">
+    <code className="language-bash">
+      go get <span className='text-purple-500'>github.com/mviner000/</span>eyygo
+    </code>
+  </pre>
+  <CopyButton text="go get github.com/mviner000/eyygo" />
+</div>
+
+## Why Choose Eyygo?
+
+Eyygo combines powerful features with ease of use, making it the perfect choice for both beginners and experienced developers:
+
+- **🚀 Blazing Fast**: Built on Go's performance, Eyygo ensures your web applications run at lightning speed.
+- **🛡️ Security-First**: With built-in security middlewares, your app is protected right out of the box.
+- **🔧 Developer Friendly**: Intuitive APIs and built-in tools make development a breeze.
+- **🌐 Production Ready**: Easily configure for both development and production environments.
+
+## Key Features
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+  <div className="feature-card">
+    <h3>📡 WebSocket Support</h3>
+    <p>Built-in WebSocket functionality for real-time communication.</p>
+  </div>
+  <div className="feature-card">
+    <h3>🔄 Database Migrations</h3>
+    <p>Effortless database schema management with migrate and makemigrations tools.</p>
+  </div>
+  <div className="feature-card">
+    <h3>🔒 Security Middlewares</h3>
+    <p>Protect your app with clickjack, CSRF, and JWT middlewares.</p>
+  </div>
+  <div className="feature-card">
+    <h3>🔐 HTTPS & SSL</h3>
+    <p>Force HTTPS redirection and easy integration with Let's Encrypt and Nginx.</p>
+  </div>
+  <div className="feature-card">
+    <h3>⚙️ Flexible Configuration</h3>
+    <p>Easily switch between development and production modes.</p>
+  </div>
+  <div className="feature-card">
+    <h3>👤 Admin Management</h3>
+    <p>Built-in admin interface for easy content management.</p>
+  </div>
+</div>
+
+## Get Started
+
+Ready to build your next web application with Eyygo? Follow our [Quick Start Guide](./Environment%20Variables/Settings.mdx)  to get up and running in minutes!
+
+```go
+package main
+
+import "github.com/eyygo"
+
+func LoadSettings() {
+	err := godotenv.Load()
+
+	environment := os.Getenv("NODE_ENV")
+
+	dbConfig := shared.DatabaseConfig{
+		Engine:   os.Getenv("DB_ENGINE"),
+		Name:     os.Getenv("DB_NAME"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+	}
+
+	debug := os.Getenv("DEBUG")
+
+	secretKey := os.Getenv("SECRET_KEY")
+
+	installedApps := createAppPaths([]string{
+		"eyygo.admin",
+		"eyygo.sessions",
+		"eyygo.auth",
+		"project_name.app_name",
+	})
+
+	AppSettings = SettingsStruct{
+		InstalledApps:    installedApps,
+		WebSocket:        WebSocketConfig{Port: os.Getenv("WS_PORT")},
+		AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGINS")},
+		CertFile:         filepath.Join(os.Getenv("CERT_FILE")),
+		KeyFile:          filepath.Join(os.Getenv("KEY_FILE")),
+		LogFile:          filepath.Join(os.Getenv("LOG_FILE")),
+		Debug:            debug,
+		TimeZone:         os.Getenv("TIME_ZONE"),
+		Database:         dbConfig,
+		Environment:      os.Getenv("ENVIRONMENT"),
+		IsDevelopment:    os.Getenv("ENVIRONMENT") == "development",
+		CSRF: CSRFConfig{
+			Secret:    os.Getenv("CSRF_SECRET"),
+			TokenName: os.Getenv("CSRF_TOKEN_NAME"),
+			Secure:    os.Getenv("CSRF_SECURE") == "true",
+		},
+	}
+}
+```
+
+{/* ## Join the Community
+
+<div className="flex space-x-4">
+  <a href="https://github.com/eyygo/eyygo" className="community-button">
+    GitHub
+  </a>
+  <a href="https://discord.gg/eyygo" className="community-button">
+    Discord
+  </a>
+  <a href="https://twitter.com/eyygoframework" className="community-button">
+    Twitter
+  </a>
+</div> */}
+
+y
