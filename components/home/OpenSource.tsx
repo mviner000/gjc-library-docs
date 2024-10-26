@@ -37,7 +37,7 @@ export default function OpenSource() {
           </div>
         </ShimmerButton>
       </Link>
-      <Changelog className="mt-14" />
+      {/* <Changelog className="mt-14" /> */}
     </HomeSection>
   );
 }

@@ -1,0 +1,25 @@
+# Book
+
+This document provides specific configurations for the Book Schema
+
+## 📋 ER Diagram for Books or Catalog
+<img
+  src="/database/accounts.png"
+  alt="Accounts"
+  width={1121}
+/>
+
+## 1. Core Library Catalog System
+
+### Book Management
+The catalog system is built around several interconnected tables that manage all aspects of the library's physical and digital assets.
+
+#### Key Components
+
+| Component | Description | Key Fields |
+|-----------|-------------|------------|
+| **tblCat** | Primary catalog database | - Title<br/>- ISBN<br/>- Edition<br/>- Publisher<br/>- Publication Date |
+| **tblAuthor** | Author information management | - Author Name<br/>- Biography<br/>- Publications |
+| **tblSubject** | Subject categorization | - Subject Name<br/>- Category Code<br/>- Description |
+| **tblHoldings** | Physical copy tracking | - Accession Number<br/>- Status<br/>- Condition |
+| **tblLocation** | Physical location management | - Section<br/>- Shelf Number<br/>- Floor |

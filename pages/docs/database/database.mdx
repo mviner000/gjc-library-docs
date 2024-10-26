@@ -1,0 +1,38 @@
+# Database
+
+This document provides the database schema used in GJCLibrary
+
+
+## Security Features
+
+### PIN Authentication System (users_pincode)
+
+#### Security Mechanisms
+- **PIN Management**
+  - Secure PIN storage
+  - Regular rotation requirements
+  - Complexity validation
+
+- **Security Controls**
+  ```mermaid
+  graph LR
+      A[Login Attempt] --> B{Verify PIN}
+      B -->|Success| C[Grant Access]
+      B -->|Fail| D[Increment Failed Count]
+      D --> E{Check Failed Count}
+      E -->|>3| F[Lock Account]
+      E -->|≤3| G[Allow Retry]
+  ```
+
+- **Security Features**
+  - Failed attempt tracking
+  - Automatic account locking
+  - Token-based verification
+  - Timestamp monitoring
+  - Session management
+
+### Best Practices
+- Regular PIN updates required
+- Multi-factor authentication support
+- Rate limiting on attempts
+- Audit logging of security events
