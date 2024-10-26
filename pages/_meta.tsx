@@ -29,48 +29,11 @@ export default {
     type: "page",
     title: "Docs",
   },
-  // guides: {
-  //   type: "page",
-  //   title: "Guides",
-  //   // hidden from main menu via overrides.css, nextra display:hidden otherwise breaks type:page
-  // },
   faq: {
     type: "page",
     title: "FAQ",
     // hidden from main menu via overrides.css, nextra display:hidden otherwise breaks type:page
   },
-  // changelog: {
-  //   type: "page",
-  //   title: "Changelog",
-  //   theme: {
-  //     layout: "full",
-  //   },
-  // },
-  // blog: {
-  //   title: "Blog",
-  //   type: "page",
-  //   theme: {
-  //     layout: "full",
-  //   },
-  // },
-  // demo: {
-  //   title: "Demo",
-  //   type: "menu",
-  //   items: {
-  //     "try-yourself": {
-  //       title: "Interactive demo",
-  //       href: "/docs/demo",
-  //     },
-  //     video: {
-  //       title: "Video (3 min)",
-  //       href: "/video",
-  //     },
-  //     "schedule-demo": {
-  //       title: "Schedule demo",
-  //       href: "/schedule-demo",
-  //     },
-  //   },
-  // },
   careers: {
     title: "Careers",
     type: "page",

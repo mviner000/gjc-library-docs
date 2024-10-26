@@ -1,51 +1,46 @@
 import Image from "next/image";
 
 export const allAuthors = {
-  maxdeichmann: {
-    firstName: "Max",
-    name: "Max Deichmann",
-    image: "/images/people/maxdeichmann.jpg",
-    twitter: "maxdeichmann",
+  melvinnogoy: {
+    firstName: "Melvin",
+    name: "Melvin Nogoy",
+    image: "/images/people/nogoy.jpg",
+    twitter: "null",
   },
-  marcklingen: {
-    firstName: "Marc",
-    name: "Marc Klingen",
-    image: "/images/people/marcklingen.jpg",
-    twitter: "marcklingen",
+  jonnesternon: {
+    firstName: "Jonn",
+    name: "Jonn Esternon",
+    image: "/images/people/esternon.jpg",
+    twitter: "null",
   },
-  clemensrawert: {
-    firstName: "Clemens",
-    name: "Clemens Rawert",
-    image: "/images/people/clemensrawert.jpg",
-    twitter: "rawert",
+  stephaniecruz: {
+    firstName: "Stephanie",
+    name: "Stephanie Cruz",
+    image: "/images/people/cruz.jpg",
+    twitter: "null",
   },
-  hassiebpakzad: {
-    firstName: "Hassieb",
-    name: "Hassieb Pakzad",
-    image: "/images/people/hassiebpakzad.jpg",
-    twitter: "hassiebpakzad",
+  rainiermaglaque: {
+    firstName: "Rainier",
+    name: "Rainier Maglaque",
+    image: "/images/people/maglaque.jpg",
+    twitter: "null",
   },
-  richardkruemmel: {
-    firstName: "Richard",
-    name: "Richard Krümmel",
-    image: "/images/people/richardkruemmel.jpg",
-    twitter: "RichardKrue",
+  mackrafanan: {
+    firstName: "Mack",
+    name: "Mack Rafanan",
+    image: "/images/people/mackrafanan.jpg",
+    twitter: "null",
   },
-  marliesmayerhofer: {
-    firstName: "Marlies",
-    name: "Marlies Mayerhofer",
-    image: "/images/people/marliesmayerhofer.jpg",
-    twitter: "marliessophie",
+  maverickrosales: {
+    firstName: "Maverick",
+    name: "Maverick Rosales",
+    image: "/images/people/rosales.jpg",
+    twitter: "null",
   },
-  lydiayou: {
-    firstName: "Lydia",
-    name: "Lydia You",
-    image: "/images/people/lydiayou.jpg",
-  },
-  jannikmaierhoefer: {
-    firstName: "Jannik",
-    name: "Jannik Maierhöfer",
-    image: "/images/people/jannikmaierhoefer.jpg",
+  emmanuelsulit: {
+    firstName: "Emmanuel",
+    name: "Emannuel Sulit",
+    image: "/images/people/sulit.jpg",
   },
 } as const;
 

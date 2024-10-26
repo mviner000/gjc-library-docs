@@ -6,10 +6,8 @@ import { useRouter } from "next/router";
 import { MainContentWrapper } from "./components/MainContentWrapper";
 import { Frame } from "./components/Frame";
 import { GithubMenuBadge } from "./components/GitHubBadge";
-import { ToAppButton } from "./components/ToAppButton";
 import { COOKBOOK_ROUTE_MAPPING } from "./lib/cookbook_route_mapping";
 import { GeistSans } from "geist/font/sans";
-import IconDiscord from "./components/icons/discord";
 import FooterMenu from "./components/FooterMenu";
 import Link from "next/link";
 import {
@@ -17,6 +15,7 @@ import {
   AvailabilitySidebar,
 } from "./components/availability";
 import { CloudflareVideo, Video } from "./components/Video";
+import image from "next/image";
 
 const config: DocsThemeConfig = {
   logo: <Logo />,
@@ -27,36 +26,7 @@ const config: DocsThemeConfig = {
   navbar: {
     extraContent: (
       <>
-        {/* <a
-          className="p-1 hidden lg:inline-block hover:opacity-80"
-          target="_blank"
-          href="https://discord.langfuse.com"
-          aria-label="Langfuse Discord"
-        >
-          <IconDiscord className="h-7 w-7" />
-        </a> */}
-
-        {/* <a
-          className="p-1 hidden lg:inline-block hover:opacity-80"
-          target="_blank"
-          href="https://x.com/langfuse"
-          aria-label="Langfuse X formerly known as Twitter"
-          rel="nofollow noreferrer"
-        >
-          <svg
-            aria-label="X formerly known as Twitter"
-            fill="currentColor"
-            width="24"
-            height="24"
-            viewBox="0 0 24 22"
-          >
-            <path d="M16.99 0H20.298L13.071 8.26L21.573 19.5H14.916L9.702 12.683L3.736 19.5H0.426L8.156 10.665L0 0H6.826L11.539 6.231L16.99 0ZM15.829 17.52H17.662L5.83 1.876H3.863L15.829 17.52Z"></path>
-          </svg>
-        </a> */}
-
         <GithubMenuBadge />
-
-        {/* <ToAppButton /> */}
       </>
     ),
   },
@@ -74,7 +44,7 @@ const config: DocsThemeConfig = {
       return <AvailabilitySidebar frontMatter={frontMatter} />;
     },
   },
-  docsRepositoryBase: "https://github.com/mviner000/eyygo/tree/main",
+  docsRepositoryBase: "https://github.com/mviner000/gjc-library-api/tree/main",
   footer: {
     content: <FooterMenu />,
   },
@@ -82,7 +52,7 @@ const config: DocsThemeConfig = {
     const { asPath, defaultLocale, locale } = useRouter();
     const { frontMatter, title: pageTitle } = useConfig();
     const url =
-      "https://eyygo-docs.vercel.app/" +
+      "https://gjc-library-docs.vercel.app/" +
       (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
     const description = frontMatter.description ?? "";

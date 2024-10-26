@@ -35,9 +35,9 @@ export const MainContentWrapper = (props) => {
           className="flex flex-col gap-10 pt-14 border-t dark:border-neutral-800 mb-20"
           id="docs-feedback"
         >
-          <DocsFeedback key={router.pathname} />
+          {/* <DocsFeedback key={router.pathname} />
           <DocsSupport />
-          <DocsSubscribeToUpdates />
+          <DocsSubscribeToUpdates /> */}
         </div>
       ) : null}
       <Background />

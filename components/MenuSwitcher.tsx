@@ -12,7 +12,7 @@ export const MenuSwitcher = () => {
       {[
         { title: "Docs", path: "/docs", Icon: LibraryBig },
         // { title: "Guides", path: "/guides", Icon: FileCode },
-        { title: "FAQ", path: "/faq", Icon: CircleHelp },
+        { title: "FAQ", path: "/faqs", Icon: CircleHelp },
       ].map((item) =>
         asPath.startsWith(item.path) ? (
           <div
