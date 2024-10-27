@@ -8,33 +8,9 @@ const menuItems: {
     heading: "Platform",
     items: [
       {
-        name: "Golang",
+        name: "Python Django",
         href: "#",
       },
-      // {
-      //   name: "Prompt Management",
-      //   href: "/docs/prompts/get-started",
-      // },
-      // {
-      //   name: "Evaluation",
-      //   href: "/docs/scores/overview",
-      // },
-      // {
-      //   name: "Manual Annotation",
-      //   href: "/docs/scores/annotation",
-      // },
-      // {
-      //   name: "Datasets",
-      //   href: "/docs/datasets/overview",
-      // },
-      // {
-      //   name: "Metrics",
-      //   href: "/docs/analytics",
-      // },
-      // {
-      //   name: "Playground",
-      //   href: "/docs/playground",
-      // },
     ],
   },
   {
@@ -44,98 +20,11 @@ const menuItems: {
         name: "SDK - coming soon",
         href: "#",
       },
-      // {
-      //   name: "JS/TS SDK",
-      //   href: "/docs/sdk/typescript/guide",
-      // },
-      // {
-      //   name: "OpenAI SDK",
-      //   href: "/docs/integrations/openai/get-started",
-      // },
-      // {
-      //   name: "Langchain",
-      //   href: "/docs/integrations/langchain/tracing",
-      // },
-      // {
-      //   name: "Llama-Index",
-      //   href: "/docs/integrations/llama-index/get-started",
-      // },
-      // {
-      //   name: "Litellm",
-      //   href: "/docs/integrations/litellm",
-      // },
-      // {
-      //   name: "Dify",
-      //   href: "/docs/integrations/dify",
-      // },
-      // {
-      //   name: "Flowise",
-      //   href: "/docs/integrations/flowise",
-      // },
-      // {
-      //   name: "Langflow",
-      //   href: "/docs/integrations/langflow",
-      // },
-      // {
-      //   name: "Vercel AI SDK",
-      //   href: "/docs/integrations/vercel-ai-sdk",
-      // },
-      // {
-      //   name: "Instructor",
-      //   href: "/docs/integrations/instructor",
-      // },
-      // {
-      //   name: "Mirascope",
-      //   href: "/docs/integrations/mirascope",
-      // },
-      // {
-      //   name: "API",
-      //   href: "https://api.reference.langfuse.com/",
-      // },
     ],
   },
   {
     heading: "Resources",
-    items: [
-      { name: "Documentation", href: "/docs" },
-      // {
-      //   name: "Interactive Demo",
-      //   href: "/demo",
-      // },
-      // {
-      //   name: "Video demo (3 min)",
-      //   href: "/video",
-      // },
-      // {
-      //   name: "Changelog",
-      //   href: "/changelog",
-      // },
-      // {
-      //   name: "Roadmap",
-      //   href: "/docs/roadmap",
-      // },
-      // {
-      //   name: "Pricing",
-      //   href: "/pricing",
-      // },
-      // {
-      //   name: "Enterprise",
-      //   href: "/enterprise",
-      // },
-      // {
-      //   name: "Self-hosting",
-      //   href: "/docs/deployment/self-host",
-      // },
-      // {
-      //   name: "Open Source",
-      //   href: "/docs/open-source",
-      // },
-      // { name: "Why Langfuse?", href: "/why" },
-      // {
-      //   name: "Status",
-      //   href: "https://status.langfuse.com",
-      // },
-    ],
+    items: [{ name: "Documentation", href: "/docs" }],
   },
   {
     heading: "About",
@@ -146,15 +35,6 @@ const menuItems: {
         name: "About us",
         href: "#",
       },
-      // { name: "Support", href: "/support" },
-      // {
-      //   name: "Schedule Demo",
-      //   href: "/schedule-demo",
-      // },
-      // {
-      //   name: "OSS Friends",
-      //   href: "/oss-friends",
-      // },
     ],
   },
 

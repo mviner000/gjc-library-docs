@@ -5,17 +5,12 @@ faq-tags: [security]
 ---
 
 import { CopyButton } from "@/components/CopyButton";
+import { GitCloneDisplay } from "@/components/GitCloneDisplay";
+
 
 # Backend Installation
 
-<div className="mt-7 flex items-center font-semibold text-white bg-black p-4 rounded-lg">
-  <pre className="flex-1 m-0">
-    <code className="language-bash">
-      git clone <span className='text-purple-500'>https://github.com/mviner000/gjc-library-api.git</span>
-    </code>
-  </pre>
-  <CopyButton text="git clone https://github.com/mviner000/gjc-library-api.git" />
-</div>
+<GitCloneDisplay repoUrl="https://github.com/mviner000/gjc-library-api.git" mobileChars={20} />
 
 ## System Requirements
 
