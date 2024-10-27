@@ -1,0 +1,40 @@
+# Rate Limiting
+
+## Overview
+The rate limiting system provides protection against abuse and DoS attacks by limiting the number of requests a client can make within a specific time window.
+
+## Features
+- URL pattern-based rate limiting
+- Configurable request limits and time windows
+- Automatic blocking of excessive requests
+- Environment-specific configurations
+
+## Configuration
+```python
+# Default rate limits
+api/auth/: 5 requests per minute
+api/*: 100 requests per minute
+CSRF endpoints: Configurable via CSRF_RATE_LIMIT
+```
+
+## Implementation
+The rate limiter uses Django's cache backend to track request counts per client and implements a sliding window algorithm.
+
+```python
+@rate_limit()
+def your_view(request):
+    # Your view logic here
+    pass
+```
+
+## Best Practices
+1. Set stricter limits for authentication endpoints
+2. Use different limits for development and production
+3. Monitor and log rate limit violations
+4. Implement gradual backoff for blocked clients
+
+## Recommendations for Improvement
+1. Add Redis backend support for distributed setups
+2. Implement rate limit headers (X-RateLimit-*)
+3. Add burst allowance for legitimate traffic spikes
+4. Implement IP-based rate limiting with subnet support

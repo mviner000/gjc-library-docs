@@ -1,0 +1,44 @@
+# CSRF Protection
+
+## Overview
+Cross-Site Request Forgery (CSRF) protection is implemented using Django's built-in CSRF middleware with enhanced security features.
+
+## Security Features
+
+### Token Management
+```python
+@require_http_methods(["GET"])
+@ensure_csrf_cookie
+@rate_limit()
+@security_headers_decorator
+def get_csrf_token(request):
+    # Secure token generation
+```
+
+### Security Headers
+All CSRF endpoints include:
+- X-Content-Type-Options: nosniff
+- X-Frame-Options: DENY
+- Cache-Control: no-store
+- SameSite cookie settings
+
+## Environment-Specific Settings
+
+### Production
+```env
+CSRF_COOKIE_SECURE=True
+CSRF_COOKIE_HTTPONLY=True
+CSRF_COOKIE_SAMESITE=Strict
+```
+
+### Development
+```env
+CSRF_COOKIE_SECURE=False
+CSRF_COOKIE_SAMESITE=Lax
+```
+
+## Recommended Improvements
+1. Implement token rotation for long-lived sessions
+2. Add CSRF token verification in middleware
+3. Implement automatic token refresh mechanism
+4. Add CSRF token validation logging

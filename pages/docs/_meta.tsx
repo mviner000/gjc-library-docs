@@ -7,4 +7,5 @@ export default {
   },
   index: "Overview",
   database: "Database",
+  security: "Security",
 };
