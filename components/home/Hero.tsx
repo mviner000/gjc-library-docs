@@ -24,15 +24,25 @@ export function Hero() {
           <span className="underline decoration-dotted">
             very well, documented
           </span>
-          <div className="underline decoration-dotted">
-            <p>Library Management System </p>
+          <div>
+            <p className="">Library Management System </p>
             <p>
               <span>&nbsp;written in </span>
-              <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent animate-gradient">
-                Python Django
-              </span>{" "}
-              <span className="underline">and Nextjs </span>
-              <span className="p-1 pt-0 bg-purple-500 rounded-md">15</span>
+              <span className="bg-gradient-to-r from-red-800 to-red-600 bg-clip-text text-transparent animate-gradient">
+                <span className="text-5xl bg-red-500 p-1 text-white rounded-md mr-1">
+                  ⚙️
+                </span>
+                <span className="underline decoration-slate-600 font-black">
+                  Rust{" "}
+                </span>
+              </span>
+              <span className="underline decoration-slate-600">and </span>
+              <span className="underline decoration-slate-600 bg-gradient-to-r from-purple-500 to-purple-600 bg-clip-text text-transparent animate-gradient">
+                Nextjs
+              </span>
+              <span className="text-white dark:text-black p-1 pt-0 bg-purple-500 rounded-md text-6xl ml-1 font-bold">
+                15
+              </span>
             </p>
           </div>
         </div>
