@@ -1,0 +1,190 @@
+# Repository Implementations
+
+This documentation covers the implementation details of our repository layer, which handles data persistence and database interactions using Diesel ORM with PostgreSQL.
+
+## Overview
+
+The repository layer consists of three main implementations:
+- Account Repository
+- Authentication Repository
+- User Repository
+
+Each repository implements async traits and uses Diesel's connection pooling for efficient database access.
+
+## Account Repository
+
+The `AccountRepositoryImpl` handles all account-related database operations.
+
+### Structure
+
+```rust
+#[derive(Clone)]
+pub struct AccountRepositoryImpl {
+    pool: Pool<ConnectionManager<PgConnection>>,
+}
+```
+
+### Features
+
+- **User Account Lookup**: Find account details by user ID
+- **Profile Updates**: Update account information like names
+- **Avatar Management**: Update avatar URLs for different sizes
+
+### Key Methods
+
+#### Find Account by User ID
+
+```rust
+async fn find_by_user_id(&self, user_id: i32) -> Result<Account>
+```
+
+Retrieves account information including:
+- Basic profile details (first, middle, last name)
+- Avatar URLs (300x300 and 40x40)
+- Creation and update timestamps
+
+#### Update Account Details
+
+```rust
+async fn update(&self, user_id: i32, account_dto: UpdateAccountDto) -> Result<Account>
+```
+
+Updates profile information with automatic timestamp management.
+
+## Authentication Repository
+
+The `AuthRepositoryImpl` manages user authentication and registration processes.
+
+### Structure
+
+```rust
+#[derive(Clone)]
+pub struct AuthRepositoryImpl {
+    pool: Pool<ConnectionManager<PgConnection>>,
+    salt: [u8; 16],
+}
+```
+
+### Security Features
+
+- **Password Hashing**: Uses bcrypt with consistent salt
+- **Transaction Safety**: Ensures data consistency during registration
+- **Duplicate Prevention**: Checks for existing usernames
+
+### Key Methods
+
+#### User Authentication
+
+```rust
+async fn authenticate(&self, auth: AuthUser) -> Result<User>
+```
+
+Handles login process with:
+- Password verification
+- User lookup
+- Secure hash comparison
+
+#### User Registration
+
+```rust
+async fn register(&self, register_dto: RegisterUserDto) -> Result<User>
+```
+
+Manages new user creation with:
+- Username uniqueness validation
+- Password hashing
+- Account creation in transaction
+- Profile initialization
+
+## User Repository
+
+The `UserRepositoryImpl` provides CRUD operations for user management.
+
+### Structure
+
+```rust
+#[derive(Clone)]
+pub struct UserRepositoryImpl {
+    pool: Pool<ConnectionManager<PgConnection>>,
+}
+```
+
+### Features
+
+- Complete CRUD operations
+- Bulk user retrieval
+- Secure password handling
+
+### Key Methods
+
+#### Create User
+
+```rust
+async fn create(&self, user_dto: CreateUserDto) -> Result<User>
+```
+
+#### Find User
+
+```rust
+async fn find_by_id(&self, user_id: i32) -> Result<User>
+```
+
+#### Update User
+
+```rust
+async fn update(&self, user_id: i32, user_dto: UpdateUserDto) -> Result<User>
+```
+
+#### Delete User
+
+```rust
+async fn delete(&self, user_id: i32) -> Result<()>
+```
+
+## Database Schema
+
+### Users Table
+```sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR NOT NULL,
+    email VARCHAR NOT NULL,
+    password VARCHAR NOT NULL
+);
+```
+
+### Accounts Table
+```sql
+CREATE TABLE accounts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    first_name VARCHAR,
+    middle_name VARCHAR,
+    last_name VARCHAR,
+    avatar_300x300_url VARCHAR,
+    avatar_40x40_url VARCHAR,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+```
+
+## Error Handling
+
+All repositories use boxed errors with Send + Sync traits to ensure thread safety:
+```rust
+Box<dyn std::error::Error + Send + Sync>
+```
+
+Common error cases:
+- Database connection failures
+- Record not found
+- Unique constraint violations
+- Authentication failures
+
+## Best Practices
+
+1. **Connection Pooling**: All repositories use connection pooling for efficient database access
+2. **Transaction Safety**: Critical operations use transactions to ensure data consistency
+3. **Async Operations**: All database operations are async for better performance
+4. **Error Propagation**: Comprehensive error handling with proper error types
+5. **Timestamps**: Automatic timestamp management for created_at and updated_at fields

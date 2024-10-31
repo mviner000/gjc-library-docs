@@ -1,0 +1,232 @@
+# API Server Documentation
+
+## Architecture Overview
+
+Our API server implements a clean architecture pattern, separating concerns into distinct layers for better maintainability and testing. The application is built using Rust with Actix-web framework.
+
+### Core Layers
+
+```mermaid
+graph TD
+    A[Presentation Layer] --> B[Application Layer]
+    B --> C[Domain Layer]
+    B --> D[Infrastructure Layer]
+    D --> C
+```
+
+- **Domain Layer**: Contains core business logic and entities
+- **Application Layer**: Implements use cases and business rules
+- **Infrastructure Layer**: Handles external concerns like databases
+- **Presentation Layer**: Manages API endpoints and request handling
+
+## Project Structure
+
+```
+src/
+├── main.rs           # Application entry point
+├── domain/           # Core business logic
+├── application/      # Use cases
+├── infrastructure/   # External services
+├── presentation/     # API endpoints
+└── schema/          # Database schemas
+```
+
+## Features
+
+### Authentication & Authorization
+- JWT-based authentication
+- Bearer token validation
+- Protected routes
+- Login/Register functionality
+
+```rust
+// Example JWT validation middleware
+pub async fn validator(
+    req: ServiceRequest, 
+    credentials: BearerAuth
+) -> Result<ServiceRequest, (Error, ServiceRequest)> {
+    let secret_key = std::env::var("SECRET_KEY").expect("SECRET_KEY must be set");
+    let token = credentials.token();
+    
+    match decode::<Claims>(
+        token,
+        &DecodingKey::from_secret(secret_key.as_bytes()),
+        &Validation::default(),
+    ) {
+        Ok(_) => Ok(req),
+        Err(_) => Err((ErrorUnauthorized("Invalid token"), req))
+    }
+}
+```
+
+### User Management
+- CRUD operations for users
+- Account management
+- Avatar upload functionality
+- Static file serving for uploads
+
+### API Routes
+
+#### Public Routes
+- `/api/v1/auth/login` - User login
+- `/api/v1/auth/register` - User registration
+
+#### Protected Routes
+All protected routes require a valid JWT token in the Authorization header.
+
+**Users:**
+- GET `/api/v1/users` - List all users
+- GET `/api/v1/users/{id}` - Get user by ID
+- POST `/api/v1/users` - Create new user
+- PUT `/api/v1/users/{id}` - Update user
+- DELETE `/api/v1/users/{id}` - Delete user
+
+**Accounts:**
+- GET `/api/v1/account` - Get account details
+- PUT `/api/v1/account` - Update account
+- POST `/api/v1/account/avatar` - Upload avatar
+
+## Implementation Details
+
+### CORS Configuration
+The server implements CORS middleware with the following configuration:
+
+```rust
+let cors = Cors::default()
+    .send_wildcard()
+    .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+    .allowed_headers(vec![
+        header::AUTHORIZATION,
+        header::ACCEPT,
+        header::CONTENT_TYPE,
+    ])
+    .supports_credentials()
+    .max_age(3600);
+```
+
+### File Upload Handling
+The server automatically creates and manages an uploads directory:
+
+```rust
+let upload_dir = PathBuf::from("uploads");
+std::fs::create_dir_all(&upload_dir)?;
+```
+
+Files are served statically from this directory:
+```rust
+.service(Files::new("/uploads", "uploads").show_files_listing())
+```
+
+### Dependency Injection
+The application uses dependency injection to maintain clean architecture principles:
+
+```rust
+// Repository layer
+let user_repository = UserRepositoryImpl::new(pool.clone());
+let auth_repository = AuthRepositoryImpl::new(pool.clone(), secret_key);
+let account_repository = AccountRepositoryImpl::new(pool.clone());
+
+// Use case layer
+let get_user_use_case = GetUserByIdUseCase::new(user_repository.clone());
+let create_user_use_case = CreateUserUseCase::new(user_repository.clone());
+// ... more use cases
+
+// Handler layer
+let user_handlers = web::Data::new(UserHandlers::new(
+    get_user_use_case,
+    create_user_use_case,
+    list_users_use_case,
+    update_user_use_case,
+    delete_user_use_case,
+));
+```
+
+## Environment Configuration
+
+Required environment variables:
+- `DATABASE_URL`: PostgreSQL connection string
+- `SECRET_KEY`: JWT secret key for token generation/validation
+
+Example `.env` file:
+```env
+DATABASE_URL=postgres://user:password@localhost/dbname
+SECRET_KEY=your-secret-key-here
+```
+
+## Getting Started
+
+1. Clone the repository
+2. Create a `.env` file with required variables
+3. Run migrations:
+   ```bash
+   cargo install diesel_cli
+   diesel migration run
+   ```
+4. Start the server:
+   ```bash
+   cargo run
+   ```
+   
+The server will start on `127.0.0.1:8080`.
+
+## Error Handling
+
+The application implements comprehensive error handling:
+
+- Authentication errors return 401 Unauthorized
+- Invalid requests return 400 Bad Request
+- Not found resources return 404 Not Found
+- Server errors return 500 Internal Server Error
+
+## Security Best Practices
+
+1. **JWT Token Validation**
+   - Tokens are validated on every protected request
+   - Short expiration times
+   - Secure secret key handling
+
+2. **File Upload Security**
+   - File type validation
+   - Size limits
+   - Secure file storage
+
+3. **CORS Security**
+   - Specific allowed origins
+   - Limited allowed methods
+   - Credential support for authenticated requests
+
+## Performance Considerations
+
+1. **Connection Pooling**
+   - Database connections are pooled for better performance
+   - Connection pool is shared across handlers
+
+2. **Static File Serving**
+   - Uploads are served directly by the web server
+   - Efficient file handling through Actix's Files service
+
+## Testing
+
+To run the test suite:
+
+```bash
+cargo test
+```
+
+Key test areas:
+- Unit tests for use cases
+- Integration tests for API endpoints
+- Repository tests
+- Authentication tests
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

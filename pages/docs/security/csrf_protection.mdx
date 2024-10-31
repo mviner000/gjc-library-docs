@@ -1,44 +1,164 @@
 # CSRF Protection
 
-## Overview
-Cross-Site Request Forgery (CSRF) protection is implemented using Django's built-in CSRF middleware with enhanced security features.
+## Overview 🛡️
 
-## Security Features
+This documentation covers the enhanced CSRF protection and rate limiting implementation for Django applications. The system provides:
 
-### Token Management
+- Environment-based configuration
+- Robust CSRF token management
+- Advanced rate limiting
+- Security headers
+- CORS support
+
+## CSRF Protection 🔒
+
+### Configuration (csrf.py)
+
+The CSRF configuration is managed through the `CSRFConfig` class which provides environment-aware settings:
+
 ```python
-@require_http_methods(["GET"])
+from typing import Dict, Any
+
+class CSRFConfig:
+    @classmethod
+    def get_settings(cls) -> Dict[str, Any]:
+        is_prod = cls.is_production()
+        return {
+            'CSRF_COOKIE_NAME': "csrftoken",
+            'CSRF_COOKIE_AGE': 86400 if is_prod else 31449600,
+            # ... other settings
+        }
+```
+
+Key features:
+- Production/development environment detection
+- Configurable cookie settings
+- Dynamic trusted origins
+- Rate limiting integration
+
+### Token Management (csrf_views.py)
+
+The CSRF token endpoint provides:
+- Token generation with proper security headers
+- CORS support
+- Rate limiting protection
+- Error handling
+
+```python
+@require_http_methods(["GET", "OPTIONS"])
 @ensure_csrf_cookie
 @rate_limit()
-@security_headers_decorator
+@cors_headers_decorator
 def get_csrf_token(request):
-    # Secure token generation
+    # ... implementation
 ```
 
-### Security Headers
-All CSRF endpoints include:
-- X-Content-Type-Options: nosniff
-- X-Frame-Options: DENY
-- Cache-Control: no-store
-- SameSite cookie settings
+## Rate Limiting ⏱️
 
-## Environment-Specific Settings
+### Core Features
 
-### Production
-```env
-CSRF_COOKIE_SECURE=True
-CSRF_COOKIE_HTTPONLY=True
-CSRF_COOKIE_SAMESITE=Strict
+The rate limiting system provides:
+- URL pattern-based limits
+- Configurable windows and block durations
+- Header support for rate limit information
+- Cache-based tracking
+
+### Implementation Details
+
+```python
+class RateLimit:
+    requests: int      # Maximum requests allowed
+    window: int       # Time window in seconds
+    block_duration: Optional[int]  # Block duration if exceeded
 ```
 
-### Development
+URL patterns configuration:
+```python
+url_patterns: Dict[str, RateLimit] = {
+    '^api/csrf/': RateLimit(requests=10, window=60, block_duration=300),
+    '^api/auth/': RateLimit(5, 60),
+    '^api/.*': RateLimit(100, 60),
+}
+```
+
+## Configuration ⚙️
+
+### Environment Variables
+
+#### Development (.env.local)
 ```env
+CSRF_URL_SUFFIX=WNiaU0OBGO
 CSRF_COOKIE_SECURE=False
-CSRF_COOKIE_SAMESITE=Lax
+CSRF_RATE_LIMIT=10
 ```
 
-## Recommended Improvements
-1. Implement token rotation for long-lived sessions
-2. Add CSRF token verification in middleware
-3. Implement automatic token refresh mechanism
-4. Add CSRF token validation logging
+#### Production (.env.production)
+```env
+CSRF_URL_SUFFIX=settings.csrfurlname-csrf
+CSRF_COOKIE_SECURE=True
+CSRF_RATE_LIMIT=5
+```
+
+### Django Settings Integration
+
+```python
+# settings.py
+from .csrf import *  # Import CSRF settings
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    # ... other middleware
+]
+```
+
+## Security Headers 🖥️
+
+The implementation includes comprehensive security headers:
+
+```python
+def format_security_headers(response):
+    response["X-Content-Type-Options"] = "nosniff"
+    response["X-Frame-Options"] = "DENY"
+    response["X-XSS-Protection"] = "1; mode=block"
+    # ... other headers
+```
+
+## Best Practices 💾
+
+1. **Environment Separation**
+   - Use different settings for development and production
+   - Strict security in production
+   - Relaxed settings for development
+
+2. **Rate Limiting Strategy**
+   - More restrictive limits for sensitive endpoints
+   - Graduated response to abuse
+   - Clear feedback through headers
+
+3. **CSRF Protection**
+   - Short-lived tokens in production
+   - Secure cookie settings
+   - Proper CORS configuration
+
+## Improvements
+
+1. **Rate Limiting Enhancements**
+   - Add IP-based rate limiting
+   - Implement user-based quotas
+   - Add Redis support for distributed systems
+
+2. **Security Improvements**
+   - Add token rotation
+   - Implement automated blocking for suspicious patterns
+   - Add request logging and monitoring
+
+3. **Performance Optimization**
+   - Cache optimization
+   - Async support for token generation
+   - Rate limit pre-checking middleware
+
+4. **Monitoring and Logging**
+   - Add detailed logging for security events
+   - Implement metrics collection
+   - Create admin dashboard for rate limit monitoring
