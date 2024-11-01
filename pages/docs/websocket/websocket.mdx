@@ -1,0 +1,325 @@
+# Websocket HOW TO
+
+## Prerequisites
+- Rust Actix Backend (as provided in the previous code)
+- Next.js Frontend
+- TypeScript
+- WebRTC (for video/audio calls)
+
+## Frontend Setup
+
+### 1. Create WebSocket Context and Hook
+
+```typescript
+// contexts/WebSocketContext.tsx
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { WebSocketMessage } from './types';
+
+interface WebSocketContextType {
+  socket: WebSocket | null;
+  isConnected: boolean;
+  sendMessage: (message: WebSocketMessage) => void;
+  messages: WebSocketMessage[];
+}
+
+const WebSocketContext = createContext<WebSocketContextType>({
+  socket: null,
+  isConnected: false,
+  sendMessage: () => {},
+  messages: [],
+});
+
+export const WebSocketProvider: React.FC<{ children: React.ReactNode, userId: number, token: string }> = ({ 
+  children, 
+  userId, 
+  token 
+}) => {
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [messages, setMessages] = useState<WebSocketMessage[]>([]);
+
+  useEffect(() => {
+    const ws = new WebSocket(`ws://localhost:8080/ws/${userId}?token=${token}`);
+
+    ws.onopen = () => {
+      console.log('WebSocket Connected');
+      setIsConnected(true);
+      setSocket(ws);
+    };
+
+    ws.onmessage = (event) => {
+      const message: WebSocketMessage = JSON.parse(event.data);
+      setMessages(prev => [...prev, message]);
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket Disconnected');
+      setIsConnected(false);
+      setSocket(null);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [userId, token]);
+
+  const sendMessage = useCallback((message: WebSocketMessage) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(message));
+    }
+  }, [socket]);
+
+  return (
+    <WebSocketContext.Provider value={{ socket, isConnected, sendMessage, messages }}>
+      {children}
+    </WebSocketContext.Provider>
+  );
+};
+
+export const useWebSocket = () => useContext(WebSocketContext);
+```
+
+### 2. WebSocket Message Types
+
+```typescript
+// types/index.ts
+export type WebSocketMessage = 
+  | {
+      type: 'chat';
+      toUserId: number;
+      content: string;
+    }
+  | {
+      type: 'callOffer';
+      toUserId: number;
+      sdp: string;
+    }
+  | {
+      type: 'callAnswer';
+      toUserId: number;
+      sdp: string;
+    }
+  | {
+      type: 'iceCandidate';
+      toUserId: number;
+      candidate: RTCIceCandidate;
+    }
+  | {
+      type: 'endCall';
+      toUserId: number;
+    }
+  | {
+      type: 'error';
+      message: string;
+    };
+```
+
+### 3. Chat Component
+
+```typescript
+// components/ChatComponent.tsx
+import React, { useState } from 'react';
+import { useWebSocket } from '../contexts/WebSocketContext';
+
+const ChatComponent: React.FC = () => {
+  const [message, setMessage] = useState('');
+  const [recipientId, setRecipientId] = useState<number | null>(null);
+  const { sendMessage, messages } = useWebSocket();
+
+  const handleSendMessage = () => {
+    if (recipientId && message) {
+      sendMessage({
+        type: 'chat',
+        toUserId: recipientId,
+        content: message
+      });
+      setMessage('');
+    }
+  };
+
+  return (
+    <div>
+      <input 
+        type="number" 
+        placeholder="Recipient User ID"
+        onChange={(e) => setRecipientId(Number(e.target.value))}
+      />
+      <input 
+        type="text" 
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button onClick={handleSendMessage}>Send</button>
+      
+      <div>
+        {messages.map((msg, index) => (
+          <div key={index}>
+            {msg.type === 'chat' && `${msg.toUserId}: ${msg.content}`}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ChatComponent;
+```
+
+### 4. WebRTC Video Call Component
+
+```typescript
+// components/VideoCallComponent.tsx
+import React, { useRef, useState } from 'react';
+import { useWebSocket } from '../contexts/WebSocketContext';
+
+const VideoCallComponent: React.FC = () => {
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
+  const { sendMessage } = useWebSocket();
+  const [targetUserId, setTargetUserId] = useState<number | null>(null);
+
+  const startCall = async () => {
+    if (!targetUserId) return;
+
+    const pc = new RTCPeerConnection();
+    setPeerConnection(pc);
+
+    // Get local stream
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      video: true, 
+      audio: true 
+    });
+    
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
+    }
+
+    // Add local tracks to peer connection
+    stream.getTracks().forEach(track => 
+      pc.addTrack(track, stream)
+    );
+
+    // Create and send offer
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    sendMessage({
+      type: 'callOffer',
+      toUserId: targetUserId,
+      sdp: offer.sdp || ''
+    });
+
+    // Handle incoming tracks
+    pc.ontrack = (event) => {
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = event.streams[0];
+      }
+    };
+  };
+
+  return (
+    <div>
+      <input 
+        type="number" 
+        placeholder="Target User ID"
+        onChange={(e) => setTargetUserId(Number(e.target.value))}
+      />
+      <button onClick={startCall}>Start Call</button>
+      
+      <div>
+        <video ref={localVideoRef} autoPlay muted />
+        <video ref={remoteVideoRef} autoPlay />
+      </div>
+    </div>
+  );
+};
+
+export default VideoCallComponent;
+```
+
+### 5. WebSocket Authentication Middleware (Rust)
+
+Update your Rust WebSocket handler to include token validation:
+
+```rust
+pub async fn ws_index(
+    req: HttpRequest,
+    stream: web::Payload,
+    user_id: web::Path<i32>,
+    connection_manager: web::Data<ConnectionManager>,
+    auth_token: web::Query<HashMap<String, String>>,
+) -> Result<HttpResponse, Error> {
+    // Validate token before establishing WebSocket connection
+    let token = auth_token.get("token").cloned().unwrap_or_default();
+    match validate_jwt_token(&token) {
+        Ok(_) => {
+            let actor = WebSocketActor::new(
+                user_id.into_inner(),
+                connection_manager.get_ref().clone(),
+            );
+            ws::start(actor, &req, stream)
+        },
+        Err(_) => Ok(HttpResponse::Unauthorized().finish())
+    }
+}
+```
+
+### 6. Connecting WebSocket Context
+
+```typescript
+// pages/_app.tsx
+import { WebSocketProvider } from '../contexts/WebSocketContext';
+
+function MyApp({ Component, pageProps }) {
+  const { userId, token } = useAuth(); // Your authentication hook
+
+  return (
+    <WebSocketProvider userId={userId} token={token}>
+      <Component {...pageProps} />
+    </WebSocketProvider>
+  );
+}
+```
+
+## Advanced Features
+
+### 1. Error Handling
+- Implement comprehensive error handling in both Rust backend and Next.js frontend
+- Create error boundary components
+- Log and display meaningful error messages
+
+### 2. Reconnection Strategy
+- Implement automatic WebSocket reconnection with exponential backoff
+- Add connection status indicators in UI
+
+### 3. Message Queuing
+- Create a message queue for unsent messages during disconnection
+- Retry sending messages when connection is re-established
+
+### 4. Performance Optimization
+- Use binary WebSocket messages for large payloads
+- Implement message compression
+- Use WebSocket for real-time updates, fallback to HTTP for non-critical operations
+
+## Security Considerations
+- Always validate and sanitize WebSocket messages
+- Use HTTPS/WSS in production
+- Implement rate limiting
+- Validate user permissions for each WebSocket action
+
+## Deployment Recommendations
+- Use Nginx as a reverse proxy
+- Configure WebSocket connection settings
+- Implement load balancing for WebSocket connections
+
+## Monitoring and Logging
+- Add comprehensive logging for WebSocket events
+- Use Prometheus/Grafana for monitoring WebSocket connections
+- Track connection metrics, message rates, and error rates
+
+## Potential Enhancements
+- Implement end-to-end encryption for messages
+- Add support for group chats
+- Create more sophisticated presence system
+- Implement file/media sharing via WebSocket

@@ -1,0 +1,111 @@
+# Infrastructure
+
+## Overview
+
+This application is a robust Rust-based web service built using the Actix Web framework, implementing a clean architecture with clear separation of concerns. The system provides authentication, user management, account handling, and real-time WebSocket communication.
+
+## Architecture Components
+
+### Handlers
+
+#### 1. Account Handlers (`account_handlers.rs`)
+Responsible for account-related operations:
+- Retrieve account information
+- Update account details
+- Upload user avatar
+
+**Key Methods:**
+- `get_account`: Fetch account details by user ID
+- `update_account`: Modify account information
+- `upload_avatar`: Handle avatar image uploads
+
+#### 2. Authentication Handlers (`auth_handlers.rs`)
+Manages user authentication and registration:
+- User login
+- User registration
+- Token-based authentication
+
+**Key Methods:**
+- `login`: Authenticate user credentials
+- `register`: Create new user account
+
+#### 3. User Handlers (`user_handlers.rs`)
+Provides comprehensive user management:
+- Create new users
+- Retrieve user information
+- List all users
+- Update user details
+- Delete user accounts
+
+**Key Methods:**
+- `get_user`: Fetch user by ID
+- `create_user`: Create new user
+- `list_users`: Retrieve all users
+- `update_user`: Modify user information
+- `delete_user`: Remove user account
+
+#### 4. WebSocket Handlers (`ws_handlers.rs`)
+Enables real-time communication:
+- Manage WebSocket connections
+- Handle chat messages
+- Facilitate peer-to-peer call signaling
+
+**Features:**
+- User connection management
+- Message broadcasting
+- Call signaling (WebRTC support)
+  - Call offers
+  - Call answers
+  - ICE candidate exchange
+  - Call termination
+
+### Authentication Middleware
+
+#### Authentication Middleware (`auth.rs`)
+Provides token-based authentication:
+- Validate JWT tokens
+- Protect routes requiring authentication
+- Reject unauthorized access
+
+## WebSocket Message Types
+
+The system supports multiple WebSocket message types:
+
+1. `Chat`: Send messages between users
+2. `CallOffer`: Initiate a WebRTC call
+3. `CallAnswer`: Respond to a call offer
+4. `IceCandidate`: Exchange network information
+5. `EndCall`: Terminate an ongoing call
+6. `Error`: Handle and report communication errors
+
+## Security Considerations
+
+- JWT-based authentication
+- Environment-based secret key management
+- Secure WebSocket communication
+- Error handling and logging
+
+## Deployment Recommendations
+
+- Use environment variables for configuration
+- Implement comprehensive logging
+- Configure secure secret key management
+- Use HTTPS for all communications
+- Implement rate limiting
+- Regular security audits
+
+## Technology Stack
+
+- **Language**: Rust
+- **Web Framework**: Actix Web
+- **Authentication**: JSON Web Tokens (JWT)
+- **WebSocket**: Actix WebSocket
+- **Serialization**: Serde
+- **Logging**: Tracing
+
+## Future Improvements
+
+- Enhanced error handling
+- More granular permission systems
+- Advanced WebRTC features
+- Comprehensive unit and integration testing

@@ -9,4 +9,5 @@ export default {
   database: "Database",
   security: "Security",
   api: "Backend API",
+  websocket: "Websocket",
 };
